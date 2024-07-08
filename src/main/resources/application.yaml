@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: observability-research
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'health,prometheus'
