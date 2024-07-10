@@ -10,6 +10,7 @@ import ru.anverbogatov.observability_research.infrastructure.integrations.client
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,20 @@ public class DomainService {
         result.add(serviceCClient.getNote());
         result.add(serviceDClient.getWelcome());
         result.add(serviceEClient.getFinalInfo());
+
+        return result;
+    }
+
+    public List<String> getFullStatusWithCompletableFuture() {
+        var result = new ArrayList<String>();
+
+        CompletableFuture.allOf(
+                CompletableFuture.supplyAsync(serviceAClient::getMessage).thenAccept(result::add),
+                CompletableFuture.supplyAsync(serviceBClient::getText).thenAccept(result::add),
+                CompletableFuture.supplyAsync(serviceCClient::getNote).thenAccept(result::add),
+                CompletableFuture.supplyAsync(serviceDClient::getWelcome).thenAccept(result::add),
+                CompletableFuture.supplyAsync(serviceEClient::getFinalInfo).thenAccept(result::add)
+        ).join();
 
         return result;
     }
